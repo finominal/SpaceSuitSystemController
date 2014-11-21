@@ -5,7 +5,7 @@
   //define Pins 
 const int visorClosedDetectionSwitch = 3;
 const int visorOpenDetectionSwitch = 4;
-const int rotatorRelay  = 5;
+const int rotatorRelayPin  = 5;
      
 
 
