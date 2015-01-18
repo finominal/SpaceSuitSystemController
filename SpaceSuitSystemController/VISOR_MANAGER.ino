@@ -1,7 +1,7 @@
 
 void CheckVisorOpenCloseButton()
 {
-
+  
   if(VisorButton() == HIGH)
   {
     while(VisorButton() == HIGH){;} //wait for button to be released, ensures nice solid presses.
@@ -35,23 +35,30 @@ void MoveVisor()
 
 void OpenVisor()
 {
+  // LedProg_VisorOpening();
+  
   while(digitalRead(visorOpenDetectionSwitch) == LOW)
   {
-    MoveStepper(-1);
+    MoveStepper(STEP_DIR_OPEN,1);
     // ? Do we need to set a timer here, or will the stepper motor speed take care of that? 
   }
-  MoveStepper(-10); //once contact switch is triggered, move a little further so that the contact switch is definately closed.
+  MoveStepper(true, -10); //once contact switch is triggered, move a little further so that the contact switch is definately closed.
+  
+  // LedProg_VisorOpened();
 }
 
 
 
 void CloseVisor()
 {
-
+  // LedProg_VisorClosing();
+  
   while(digitalRead(visorClosedDetectionSwitch) == LOW)
   {
-    MoveStepper(1);
+    MoveStepper(STEP_DIR_CLOSE, 1);
   }
-  MoveStepper(-10); //once contact switch is triggered, move a little further so that the contact switch is definately closed.
+  MoveStepper(false,-10); //once contact switch is triggered, move a little further so that the contact switch is definately closed.
+  
+  // LedProg_VisorClosed();
 }
 
