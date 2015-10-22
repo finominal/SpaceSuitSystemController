@@ -1,10 +1,9 @@
-#include <Stepper.h>
-
+//#include <Stepper.h>
 
 const int stepsPerRevolution = 200;                    // change this to fit the number of steps per revolution for you motor
-Stepper myStepper(stepsPerRevolution, 10,11,12,13);     // initialize the stepper library on pins 8 through 11:                                 
+//Stepper myStepper(stepsPerRevolution, 10,11,12,13);     // initialize the stepper library on pins 8 through 11:                                 
 int stepCount = 0;                                    // number of steps the motor has taken                                   
-const int maxSteps = 20000;                           //Watchdog: helps shut down the motor in case the end contacts fail
+const int maxSteps = 5000;                           //Watchdog: helps shut down the motor in case the end contacts fail
 const int StepperMotorSpeed = 10;
 
 boolean UP, DOWN, LEFT, RIGHT, A, B;
@@ -14,8 +13,9 @@ boolean rotatorOn = false;
 const int rotatorPin = 4;
 
 //define Sensor Switch Pins 
-const int visorClosedDetectionSwitch = 11;
-const int visorOpenDetectionSwitch = 12;
+const int visorClosedDetectionSwitch = 2;
+const int visorOpenDetectionSwitch = 3;
+
 
 //define stepper communication pins
 #define ENABLE 8
@@ -24,74 +24,88 @@ const int visorOpenDetectionSwitch = 12;
 #define STEP 11
 #define DIRECTION 12
 
+
+
 void setup()
 {
   Serial.begin(9600); //comms to LED arduino controller
   InitializeStepper();
-  TestMove(-500);
+  MoveStepper(-500);
+
 }
+
+
 
 void loop()
 {
-  ReadButtons();
+  //ReadButtons();
+  MoveVisor();
 }
 
 
-void ToggleRotator()
+
+void PrintButtons()
 {
-  if (B == true)
-  {
-   rotatorOn = !rotatorOn;
-  }
-  
-  if(rotatorOn == true)
-  {
-    digitalWrite(rotatorPin,LOW);
-  }
-  else
-  {
-    digitalWrite(rotatorPin,HIGH);
-  }
-  
-  while(B == true)
- {
-   ReadButtons();
- } 
-
- Serial.println("Exit B Button Press");
- delay(5);
- 
+Serial.print("LEFT=");
+  Serial.print(LEFT);
+  Serial.print(" ");
+  Serial.print("RIGHT=");
+  Serial.print(RIGHT);
+  Serial.print(" ");
+  Serial.print("UP=");
+  Serial.print(UP);
+  Serial.print(" ");
+  Serial.print("DOWN=");
+  Serial.print(DOWN);
+  Serial.print(" ");
+  Serial.print("A=");
+  Serial.print(A);
+  Serial.print(" ");
+  Serial.print("B=");
+  Serial.print(B);
+  Serial.println(" ");
 }
+
 
 
 void ReadButtons()
 {
-  if(analogRead(A6) >500) {LEFT = true;} else {LEFT = false;}
-  if(analogRead(A5) >500) {RIGHT = true;} else {RIGHT = false;}
-  if(analogRead(A4) >500) {UP = true;} else {UP = false;}
-  if(analogRead(A7) >500) {DOWN = true;} else  {DOWN = false;}
-  if(analogRead(A2) >500) {A = true;} else  {A = false;}
-  if(analogRead(A3) >500) {B = true;} else  {B = false;}
+  if(analogRead(A1) >500) {LEFT = true;} else {LEFT = false;}
+  if(analogRead(A2) >500) {RIGHT = true;} else {RIGHT = false;}
+  if(analogRead(A0) >500) {DOWN = true;} else {DOWN = false;}
+  if(analogRead(A3) >500) {UP = true;} else  {UP = false;}
+  if(analogRead(A5) >500) {A = true;} else  {A = false;}
+  if(analogRead(A4) >500) {B = true;} else  {B = false;}
 }
 
-void InitializePins()
-{
- pinMode(4,OUTPUT); //toggle relay for rotator
-}
+
+
 
 //This code has a dependancy on the stepper code. 
 
-void CheckVisorOpenCloseButton()
+void MoveVisor()
 {
-  if(B == HIGH)
+  if(UP == true)
   {
-   // while(B == HIGH) //wait for button to be released, helps stop looping
-   // MoveVisor();
+    while(UP == true) //wait for button to be released, helps stop looping
+    {
+      MoveStepper(100);
+      ReadButtons();
+    }    
+  }
+  else if(DOWN == true)
+  {
+    while(DOWN == true) //wait for button to be released, helps stop looping
+    {
+      MoveStepper(-100);
+      ReadButtons();
+    }
   }
 }
 
 
-void MoveVisor()
+
+void MoveVisorWithEndSwitches()
 {
  
   //If the visor is somewhere in between open and closed, open it.
@@ -114,15 +128,19 @@ void MoveVisor()
   
 }
 
+
+
 void OpenVisor()
 {
   while(visorOpenDetectionSwitch == LOW)
   { 
-    MoveStepper(10);
+    MoveStepper(100);
     // ? Do we need to set a timer here, or will the stepper motor speed take care of that? 
   }
   MoveStepper(-1); //once contact switch is triggered, move a little further so that the contact switch is definately closed.
 }
+
+
 
 void CloseVisor()
 {
@@ -135,10 +153,6 @@ void CloseVisor()
 
 
 
-void InitializeStepper(int motorSpeed)
-{
-  myStepper.setSpeed(motorSpeed);
-}
 
 
 

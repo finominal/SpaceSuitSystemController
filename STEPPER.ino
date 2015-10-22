@@ -1,59 +1,57 @@
 
+//DRV8825
 
-
-int waitMs = 800;
+int waitMicroSeconds = 10000;
 
 void MoveStepper(int steps)
 {
+
+  digitalWrite(ENABLE, LOW);
+  
+  Serial.print("Move Stepper ");
+  Serial.println(steps);
+  
   //set direciton
   if(steps <0)
   {
     digitalWrite(DIRECTION, LOW);
-    delay(1);
-    
-    int moved = 0;
-    while(moved < abs(steps) && visorOpenDetectionSwitch == LOW)
-    {
-      pinMode(STEP, HIGH);
-      delay(waitMs);
-      pinMode(STEP, LOW);
-      delay(waitMs);
-      
-      moved++;
-    }
   }
   else
   {
     digitalWrite(DIRECTION, HIGH);
-    delay(1);
-    
+  }
+  
+    delay(1);//wait for direciton change in stepper controller
+ 
     int moved = 0;
-    while(moved < abs(steps) && visorClosedDetectionSwitch == LOW)
+    while(moved < abs(steps) )
     {
+      Serial.println("Stepping");
       pinMode(STEP, HIGH);
-      delay(waitMs);
+      delayMicroseconds(waitMicroSeconds);
       pinMode(STEP, LOW);
-      delay(waitMs);
+      delayMicroseconds(waitMicroSeconds);
       
       moved++;
     }
-  }
+digitalWrite(ENABLE, HIGH);
+    
 }
 
 
 void InitializeStepper()
 {
    //stepperPins
- pinMode(ENABLE, OUTPUT);
- pinMode(RESET, OUTPUT);
- pinMode(SLEEP, OUTPUT);
- pinMode(STEP, OUTPUT);
  pinMode(DIRECTION, OUTPUT);
+ pinMode(STEP, OUTPUT);
+ pinMode(SLEEP, OUTPUT);
+ pinMode(RESET, OUTPUT);
+ pinMode(ENABLE, OUTPUT);
  
- digitalWrite(ENABLE, LOW);
- digitalWrite(RESET, LOW);
- digitalWrite(SLEEP, LOW);
-  digitalWrite(STEP, LOW);
-  digitalWrite(STEP, LOW);
+ digitalWrite(DIRECTION, LOW);
+ digitalWrite(STEP, LOW);
+ digitalWrite(SLEEP, HIGH);
+  digitalWrite(RESET, HIGH);
+  digitalWrite(ENABLE, HIGH);
 }
 
