@@ -1,12 +1,12 @@
 
 //DRV8825
 
-int waitMicroSeconds = 10000;
+int waitMicroSeconds = 1000;
 
 void MoveStepper(int steps)
 {
 
-  digitalWrite(ENABLE, LOW);
+   EnableStepper();
   
   Serial.print("Move Stepper ");
   Serial.println(steps);
@@ -26,7 +26,7 @@ void MoveStepper(int steps)
     int moved = 0;
     while(moved < abs(steps) )
     {
-      Serial.println("Stepping");
+      //Serial.println("Stepping");
       pinMode(STEP, HIGH);
       delayMicroseconds(waitMicroSeconds);
       pinMode(STEP, LOW);
@@ -34,10 +34,21 @@ void MoveStepper(int steps)
       
       moved++;
     }
-digitalWrite(ENABLE, HIGH);
+    
+    DisableStepper();
     
 }
 
+void EnableStepper()
+{
+  digitalWrite(ENABLE, LOW);
+}
+
+
+void DisableStepper()
+{
+  digitalWrite(ENABLE, HIGH);
+}
 
 void InitializeStepper()
 {
