@@ -1,18 +1,18 @@
 
 //DRV8825
 
-int waitMicroSeconds = 1000;
+long wait = 100;
 
 void MoveStepper(int steps)
 {
-
+  
    EnableStepper();
   
   Serial.print("Move Stepper ");
   Serial.println(steps);
   
   //set direciton
-  if(steps <0)
+  if(steps < 0)
   {
     digitalWrite(DIRECTION, LOW);
   }
@@ -20,25 +20,42 @@ void MoveStepper(int steps)
   {
     digitalWrite(DIRECTION, HIGH);
   }
+
+  delay(1);//wait for direciton change in stepper controller
+
+
   
-    delay(1);//wait for direciton change in stepper controller
- 
-    int moved = 0;
-    while(moved < abs(steps) )
-    {
-      //Serial.println("Stepping");
-      pinMode(STEP, HIGH);
-      delayMicroseconds(waitMicroSeconds);
-      pinMode(STEP, LOW);
-      delayMicroseconds(waitMicroSeconds);
-      
-      moved++;
-    }
+  MoveSteps( 20, wait*8);
+  MoveSteps( 20, wait*4);
+  MoveSteps( 20, wait*2);
+  MoveSteps( 20, wait*1.5);
+  MoveSteps( abs(steps)-160, wait);
+  MoveSteps( 20, wait*1.5);
+  MoveSteps( 20, wait*2);
+  MoveSteps( 20, wait*4);
+  MoveSteps( 20, wait*8);
+
+
+  
     
-    DisableStepper();
-    
+  DisableStepper();
 }
 
+void MoveSteps(int _steps, int _wait)
+
+ {
+    int moved = 0;
+
+    while(moved < _steps )
+    {
+      //Serial.println("Stepping");
+      digitalWrite(STEP, HIGH);
+      //delayMicroseconds(wait);
+      digitalWrite(STEP, LOW);
+      delayMicroseconds(_wait);
+      moved++;
+    }
+ }
 void EnableStepper()
 {
   digitalWrite(ENABLE, LOW);
@@ -58,11 +75,17 @@ void InitializeStepper()
  pinMode(SLEEP, OUTPUT);
  pinMode(RESET, OUTPUT);
  pinMode(ENABLE, OUTPUT);
+ pinMode(M0, OUTPUT);
+ pinMode(M1, OUTPUT);
+ pinMode(M2, OUTPUT);
  
  digitalWrite(DIRECTION, LOW);
- digitalWrite(STEP, LOW);
+ digitalWrite(STEP, HIGH);
  digitalWrite(SLEEP, HIGH);
-  digitalWrite(RESET, HIGH);
-  digitalWrite(ENABLE, HIGH);
+ digitalWrite(RESET, HIGH);
+ digitalWrite(ENABLE, HIGH);
+ digitalWrite(M0, LOW);
+ digitalWrite(M1, HIGH);
+ digitalWrite(M2, LOW);
 }
 

@@ -2,9 +2,7 @@
 
 const int stepsPerRevolution = 200;                    // change this to fit the number of steps per revolution for you motor
 //Stepper myStepper(stepsPerRevolution, 10,11,12,13);     // initialize the stepper library on pins 8 through 11:                                 
-int stepCount = 0;                                    // number of steps the motor has taken                                   
-const int maxSteps = 5000;                           //Watchdog: helps shut down the motor in case the end contacts fail
-const int StepperMotorSpeed = 10;
+
 
 boolean UP, DOWN, LEFT, RIGHT, A, B;
 
@@ -18,6 +16,9 @@ const int visorOpenDetectionSwitch = 3;
 
 
 //define stepper communication pins
+#define M0 5
+#define M1 6
+#define M2 7
 #define ENABLE 8
 #define RESET 9
 #define SLEEP 10
@@ -30,7 +31,7 @@ void setup()
 {
   Serial.begin(9600); //comms to LED arduino controller
   InitializeStepper();
-  MoveStepper(-500);
+  //MoveStepper(4900);
 
 }
 
@@ -39,10 +40,15 @@ void setup()
 void loop()
 {
   //ReadButtons();
-  MoveVisor();
+  //MoveVisor();
+ SerialMoveVisor();
 }
 
-
+void SerialMoveVisor()
+{
+ serialEvent() ;
+  
+}
 
 void PrintButtons()
 {
