@@ -1,7 +1,7 @@
 
 //DRV8825
 
-long wait = 100;
+long wait = 250;
 
 void MoveStepper(int steps)
 {
@@ -23,21 +23,53 @@ void MoveStepper(int steps)
 
   delay(1);//wait for direciton change in stepper controller
 
-
-  
-  MoveSteps( 20, wait*8);
-  MoveSteps( 20, wait*4);
+/*
+  //ramp up and down
+  MoveSteps( 30, wait*12);
+  MoveSteps( 30, wait*10);
+  MoveSteps( 30, wait*8);
+  MoveSteps( 30, wait*6);
+  MoveSteps( 30, wait*4);
   MoveSteps( 20, wait*2);
   MoveSteps( 20, wait*1.5);
-  MoveSteps( abs(steps)-160, wait);
+  MoveSteps( abs(steps)-380, wait);
   MoveSteps( 20, wait*1.5);
   MoveSteps( 20, wait*2);
-  MoveSteps( 20, wait*4);
-  MoveSteps( 20, wait*8);
+  MoveSteps( 30, wait*4);
+  MoveSteps( 30, wait*6);
+  MoveSteps( 30, wait*8);
+  MoveSteps( 30, wait*10);
+  MoveSteps( 30, wait*12);
+  */
 
+  int rampMax =  wait*20;
+  int ramp = rampMax;
+  long stepsToTake = 0;
+
+  int cr = 0;
+  int cs = 0;
+
+  while (ramp > wait)
+  {
+    MoveSteps( 10, ramp);
+    ramp = ramp/1.4;
+    cr = cr+10;
+  }
+
+stepsToTake = abs(steps) - (cr*2);
+  while(cs < stepsToTake)
+  {
+    MoveSteps( 10, wait);
+    cs = cs+10;
+  }
+
+  while (ramp < rampMax)
+  {
+    MoveSteps( 10, ramp);
+    ramp = ramp*1.4;
+  }
 
   
-    
   DisableStepper();
 }
 
