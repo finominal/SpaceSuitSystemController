@@ -11,15 +11,15 @@ boolean rotatorOn = false;
 const int rotatorPin = 4;
 
 //define Sensor Switch Pins 
-const int visorClosedDetectionSwitch = 2;
+const int visorCloseDetectionSwitch = 2;
 const int visorOpenDetectionSwitch = 3;
 
 
 //define stepper communication pins
-#define M0 5
-#define M1 6
-#define M2 7
-#define ENABLE 8
+#define M0 6
+#define M1 7
+#define M2 8
+#define ENABLE 5
 #define RESET 9
 #define SLEEP 10
 #define STEP 11
@@ -31,8 +31,7 @@ void setup()
 {
   Serial.begin(9600); //comms to LED arduino controller
   InitializeStepper();
-  //MoveStepper(4900);
-
+  //MoveStepper(400);
 }
 
 
@@ -41,7 +40,13 @@ void loop()
 {
   //ReadButtons();
   //MoveVisor();
- SerialMoveVisor();
+  
+ //SerialMoveVisor();
+ //ReadEndSwitches();
+
+
+delay(200);
+  
 }
 
 void SerialMoveVisor()
@@ -74,7 +79,7 @@ Serial.print("LEFT=");
 
 
 
-void ReadButtons()
+void ReadButtons() 
 {
   if(analogRead(A1) >500) {LEFT = true;} else {LEFT = false;}
   if(analogRead(A2) >500) {RIGHT = true;} else {RIGHT = false;}
@@ -84,7 +89,12 @@ void ReadButtons()
   if(analogRead(A4) >500) {B = true;} else  {B = false;}
 }
 
-
+void ReadEndSwitches()
+{
+ Serial.print("VisorCloseEndSwitch="); Serial.println(digitalRead(visorCloseDetectionSwitch));
+Serial.print("VisroOpenEndSwitch="); Serial.println(digitalRead(visorOpenDetectionSwitch));
+Serial.println();
+}
 
 
 //This code has a dependancy on the stepper code. 
@@ -110,18 +120,18 @@ void MoveVisor()
 }
 
 
-
+//maybe
 void MoveVisorWithEndSwitches()
 {
  
   //If the visor is somewhere in between open and closed, open it.
-  if(visorClosedDetectionSwitch == LOW and visorOpenDetectionSwitch == LOW)
+  if(visorCloseDetectionSwitch == LOW and visorOpenDetectionSwitch == LOW)
   {
     OpenVisor();
   }
   
   //If visor is detected as CLOSED, open it
-  else if (visorClosedDetectionSwitch == HIGH)
+  else if (visorCloseDetectionSwitch == HIGH)
   {
     OpenVisor();
   }
@@ -135,27 +145,6 @@ void MoveVisorWithEndSwitches()
 }
 
 
-
-void OpenVisor()
-{
-  while(visorOpenDetectionSwitch == LOW)
-  { 
-    MoveStepper(100);
-    // ? Do we need to set a timer here, or will the stepper motor speed take care of that? 
-  }
-  MoveStepper(-1); //once contact switch is triggered, move a little further so that the contact switch is definately closed.
-}
-
-
-
-void CloseVisor()
-{
-  while(visorClosedDetectionSwitch == LOW)
-  {
-    MoveStepper(1);
-  }
-  MoveStepper(-10); //once contact switch is triggered, move a little further so that the contact switch is definately closed.
-}
 
 
 

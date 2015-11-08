@@ -8,23 +8,22 @@ void serialEvent() {
     Serial.print("DataModified: "); Serial.println(inByte);
      if(inByte == 0)
      {
-        MoveStepper(19700);
-       
+       OpenVisor();
      }
      //Custom - Toggle Rotator - This variable must be actioned against later
      if(inByte == 1)
      {
-       MoveStepper(-19700);
+        CloseVisor();
      }
 
           //Custom - Toggle Rotator - This variable must be actioned against later
-     if(inByte == 6)
+     if(inByte == 6 && digitalRead(visorCloseDetectionSwitch) == 1)
      {
-       MoveStepper(400);
+       MoveStepperRamping(400);
      }
-          if(inByte == 5)
+     if(inByte == 5 && digitalRead(visorOpenDetectionSwitch) == 1)
      {
-       MoveStepper(-400);
+       MoveStepperRamping(-400);
      }
      
   }
