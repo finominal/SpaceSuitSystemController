@@ -1,97 +1,81 @@
 
 //DRV8825
 
-long wait = 250;
-long maxSteps = 5000;
-
+long wait = 50;
+long maxSteps = 85000;
 
 void OpenVisor()
 {
-  EnableStepper();
   
-  Serial.print("Open Visor ");
+  Serial.println("Open Visor");
   
-  //set direciton for open
-  digitalWrite(DIRECTION, HIGH);
-
-  delay(1);//wait for direciton change in stepper controller
-
-  int rampMax =  wait*20;
-  int ramp = rampMax;
-  long stepsToTake = 0;
-
-  int counterRamping = 0;
-  int counterStepping = 0;
-
-  if( visorOpenDetectionSwitch == HIGH)
+  if( digitalRead(visorOpenDetectionSwitch) == HIGH)
   {
+    EnableStepper();
     
-    while (ramp > wait)
-    {
-      MoveSteps( 10, ramp);
-      ramp = ramp/1.4;
-      counterRamping = counterRamping+10;
-    }
-
-    stepsToTake = maxSteps - (counterRamping*2);
+    //set direction
+    digitalWrite(DIRECTION, HIGH);
   
-    while(counterStepping < stepsToTake && visorOpenDetectionSwitch == HIGH)
+    delay(1);//wait for direciton change in stepper controller
+    
+    long counterStepping = 0; 
+
+    //ramp up
+    MoveSteps( 10, wait*2);
+
+    while(counterStepping < maxSteps && digitalRead(visorOpenDetectionSwitch) == HIGH)
+    {
+      MoveSteps( 10, wait);
+      counterStepping = counterStepping+10;
+    }
+  
+    DisableStepper();
+     Serial.println("Open Visor Done");
+  }
+  else
+  {
+   Serial.println("Open Visor End Switch already engaged. Aborting opening."); 
+    }
+  
+}
+
+
+void CloseVisor()
+{
+
+  Serial.println("Close Visor");
+
+  if(digitalRead(visorCloseDetectionSwitch) == HIGH)
+  {
+    EnableStepper();
+        
+    //set direction
+    digitalWrite(DIRECTION, LOW);
+  
+    delay(1);//wait for direciton change in stepper controller
+  
+    int counterStepping = 0;
+
+    MoveSteps( 10, wait*2);
+  
+    while(counterStepping < maxSteps && digitalRead(visorCloseDetectionSwitch) == HIGH)
     {
       MoveSteps( 10, wait);
       counterStepping = counterStepping+10;
     }
 
-    while (ramp < rampMax)
-    {
-      MoveSteps( 10, ramp);
-      ramp = ramp*1.4;
-    }
+     //override switch to house properly 
+     MoveSteps( 2000, wait);
+    
+  
+    DisableStepper();
+    Serial.print("Close Visor Done");
+  
   }
-  DisableStepper();
-}
-
-void CloseVisor()
-{
-  
-  EnableStepper();
-  
-  Serial.print("Close Visor");
-
-  
-  //set direction
-  digitalWrite(DIRECTION, LOW);
-
-  delay(1);//wait for direciton change in stepper controller
-
-  int rampMax =  wait*20;
-  int ramp = rampMax;
-  long stepsToTake = 0;
-
-  int counterRamping = 0;
-  int counterStepping = 0;
-
-  while (ramp > wait)
+  else
   {
-    MoveSteps( 10, ramp);
-    ramp = ramp/1.4;
-    counterRamping = counterRamping+10;
+    Serial.println("CLose Visor End Switch already engaged. Aborting opening."); 
   }
-
-  stepsToTake = maxSteps - (counterRamping*2);
-  
-  while(counterStepping < stepsToTake && visorCloseDetectionSwitch == HIGH)
-  {
-    MoveSteps( 10, wait);
-    counterStepping = counterStepping+10;
-  }
-
-  while (ramp < rampMax)
-  {
-    MoveSteps( 10, ramp);
-    ramp = ramp*1.4;
-  }
-
-  DisableStepper();
 }
 
 
@@ -100,52 +84,54 @@ void CloseVisor()
 
 void MoveStepperRamping(int steps)
 {
+  if((steps < 0 && digitalRead(visorCloseDetectionSwitch) == HIGH) || (steps > 0 && digitalRead(visorOpenDetectionSwitch) == HIGH) ) 
+  {
+    EnableStepper();
+    
+    Serial.print("Move Stepper ");
+    Serial.println(steps);
+    
+    //set direciton
+    if(steps < 0)
+    {
+      digitalWrite(DIRECTION, LOW);
+    }
+    else
+    {
+      digitalWrite(DIRECTION, HIGH);
+    }
   
-  EnableStepper();
+    delay(1);//wait for direciton change in stepper controller
   
-  Serial.print("Move Stepper ");
-  Serial.println(steps);
+    int rampMax =  wait*2;
+    int ramp = rampMax;
+    long stepsToTake = 0;
   
-  //set direciton
-  if(steps < 0)
-  {
-    digitalWrite(DIRECTION, LOW);
+    int counterRamping = 0;
+    int counterStepping = 0;
+  
+    while (ramp > wait)
+    {
+      MoveSteps( 10, ramp);
+      ramp = ramp/1.05;
+      counterRamping = counterRamping+10;
+    }
+  
+    stepsToTake = steps - (counterRamping*2);
+    while(counterStepping < stepsToTake )
+    {
+      MoveSteps( 10, wait);
+      counterStepping = counterStepping+10;
+    }
+  
+    while (ramp < rampMax)
+    {
+      MoveSteps( 10, ramp);
+      ramp = ramp*1.05;
+    }
+  
+    DisableStepper();
   }
-  else
-  {
-    digitalWrite(DIRECTION, HIGH);
-  }
-
-  delay(1);//wait for direciton change in stepper controller
-
-  int rampMax =  wait*20;
-  int ramp = rampMax;
-  long stepsToTake = 0;
-
-  int counterRamping = 0;
-  int counterStepping = 0;
-
-  while (ramp > wait)
-  {
-    MoveSteps( 10, ramp);
-    ramp = ramp/1.4;
-    counterRamping = counterRamping+10;
-  }
-
-  stepsToTake = maxSteps - (counterRamping*2);
-  while(counterStepping < stepsToTake )
-  {
-    MoveSteps( 10, wait);
-    counterStepping = counterStepping+10;
-  }
-
-  while (ramp < rampMax)
-  {
-    MoveSteps( 10, ramp);
-    ramp = ramp*1.4;
-  }
-
-  DisableStepper();
 }
 
 
@@ -235,9 +221,10 @@ void InitializeStepper()
  digitalWrite(ENABLE, HIGH);
  
  digitalWrite(M0, LOW);
- digitalWrite(M1, HIGH);
- digitalWrite(M2, LOW);
- 
+ digitalWrite(M1, LOW);
+ digitalWrite(M2, HIGH);
+
+ //pullup the end swtiches for the stepper
  digitalWrite(visorCloseDetectionSwitch, HIGH);
  digitalWrite(visorOpenDetectionSwitch, HIGH);
  
