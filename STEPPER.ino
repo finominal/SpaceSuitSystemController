@@ -2,7 +2,7 @@
 //DRV8825
 
 long wait = 50;
-long maxSteps = 85000;
+long maxSteps = 80000;
 
 void OpenVisor()
 {
@@ -22,6 +22,7 @@ void OpenVisor()
 
     //ramp up
     MoveSteps( 10, wait*2);
+    counterStepping = counterStepping+10;
 
     while(counterStepping < maxSteps && digitalRead(visorOpenDetectionSwitch) == HIGH)
     {
@@ -30,7 +31,9 @@ void OpenVisor()
     }
   
     DisableStepper();
-     Serial.println("Open Visor Done");
+     Serial.println("Open Visor Done ");
+     Serial.print("Steps Taken: "); Serial.println(counterStepping); 
+     
   }
   else
   {
@@ -56,7 +59,9 @@ void CloseVisor()
   
     int counterStepping = 0;
 
+    //ramp up
     MoveSteps( 10, wait*2);
+    counterStepping = counterStepping+10;
   
     while(counterStepping < maxSteps && digitalRead(visorCloseDetectionSwitch) == HIGH)
     {
@@ -66,10 +71,11 @@ void CloseVisor()
 
      //override switch to house properly 
      MoveSteps( 2000, wait);
-    
+    counterStepping = counterStepping+2000;
   
     DisableStepper();
-    Serial.print("Close Visor Done");
+    Serial.println("Close Visor Done");
+     Serial.print("Steps Taken: "); Serial.println(counterStepping); 
   
   }
   else
