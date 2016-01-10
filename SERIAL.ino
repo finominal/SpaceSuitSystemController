@@ -17,14 +17,14 @@ void serialEvent() {
      }
 
           //Custom - Toggle Rotator - This variable must be actioned against later
-     if(inByte == 6 )
+     if(inByte == 6)
      {
-       MoveStepperRamping(400);
+       MoveStepperRamping(1000);
      }
      
      if(inByte == 5 )
      {
-       MoveStepperRamping(-400);
+       MoveStepperRamping(-1000);
      }
      
   }

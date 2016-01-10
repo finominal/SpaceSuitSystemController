@@ -22,23 +22,24 @@ void OpenVisor()
 
     //ramp up
     MoveSteps( 10, wait*2);
-    counterStepping = counterStepping+10;
+    counterStepping += 10;
 
     while(counterStepping < maxSteps && digitalRead(visorOpenDetectionSwitch) == HIGH)
     {
       MoveSteps( 10, wait);
-      counterStepping = counterStepping+10;
+      counterStepping += 10;
     }
   
     DisableStepper();
-     Serial.println("Open Visor Done ");
-     Serial.print("Steps Taken: "); Serial.println(counterStepping); 
+    
+    Serial.println("Open Visor Done ");
+    Serial.print("Steps Taken: "); Serial.println(counterStepping); 
      
   }
   else
   {
-   Serial.println("Open Visor End Switch already engaged. Aborting opening."); 
-    }
+    Serial.println("Open Visor End Switch already engaged. Aborting opening."); 
+   }
   
 }
 
@@ -61,17 +62,17 @@ void CloseVisor()
 
     //ramp up
     MoveSteps( 10, wait*2);
-    counterStepping = counterStepping+10;
+    counterStepping += 10;
   
     while(counterStepping < maxSteps && digitalRead(visorCloseDetectionSwitch) == HIGH)
     {
       MoveSteps( 10, wait);
-      counterStepping = counterStepping+10;
+      counterStepping += 10;
     }
 
      //override switch to house properly 
      MoveSteps( 2000, wait);
-    counterStepping = counterStepping+2000;
+     counterStepping += 2000;
   
     DisableStepper();
     Serial.println("Close Visor Done");
@@ -90,6 +91,7 @@ void CloseVisor()
 
 void MoveStepperRamping(int steps)
 {
+  
   if((steps < 0 && digitalRead(visorCloseDetectionSwitch) == HIGH) || (steps > 0 && digitalRead(visorOpenDetectionSwitch) == HIGH) ) 
   {
     EnableStepper();
@@ -208,6 +210,7 @@ void DisableStepper()
 
 void InitializeStepper()
 {
+  Serial.println("InitializeStepper");
    //stepperPins
  pinMode(DIRECTION, OUTPUT);
  pinMode(STEP, OUTPUT);

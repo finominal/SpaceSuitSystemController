@@ -14,7 +14,6 @@ const int rotatorPin = 4;
 const int visorCloseDetectionSwitch = 2;
 const int visorOpenDetectionSwitch = 3;
 
-
 //define stepper communication pins
 #define M0 6
 #define M1 7
@@ -29,7 +28,9 @@ const int visorOpenDetectionSwitch = 3;
 
 void setup()
 {
+  
   Serial.begin(9600); //comms to LED arduino controller
+  Serial.println("Hello world!");
   InitializeStepper();
   //MoveStepper(400);
 }
@@ -38,112 +39,31 @@ void setup()
 
 void loop()
 {
-  //ReadButtons();
-  //MoveVisor();
-  
- //SerialMoveVisor();
- //ReadEndSwitches();
+  ReadButtons();
+  //PrintButtons();
 
+  //Set Rotator Toggle
+  CheckRotatorToggle();
 
-delay(200);
-  
-}
+  //Set new program if direciton button is pressed.
 
-void SerialMoveVisor()
-{
- serialEvent() ;
-  
-}
+  //move visor if visor toggle is pressed. 
 
-void PrintButtons()
-{
-Serial.print("LEFT=");
-  Serial.print(LEFT);
-  Serial.print(" ");
-  Serial.print("RIGHT=");
-  Serial.print(RIGHT);
-  Serial.print(" ");
-  Serial.print("UP=");
-  Serial.print(UP);
-  Serial.print(" ");
-  Serial.print("DOWN=");
-  Serial.print(DOWN);
-  Serial.print(" ");
-  Serial.print("A=");
-  Serial.print(A);
-  Serial.print(" ");
-  Serial.print("B=");
-  Serial.print(B);
-  Serial.println(" ");
+  //check for serial pogram.
+  serialEvent();
 }
 
 
-
-void ReadButtons() 
+void CheckRotatorToggle()
 {
-  if(analogRead(A1) >500) {LEFT = true;} else {LEFT = false;}
-  if(analogRead(A2) >500) {RIGHT = true;} else {RIGHT = false;}
-  if(analogRead(A0) >500) {DOWN = true;} else {DOWN = false;}
-  if(analogRead(A3) >500) {UP = true;} else  {UP = false;}
-  if(analogRead(A5) >500) {A = true;} else  {A = false;}
-  if(analogRead(A4) >500) {B = true;} else  {B = false;}
-}
-
-void ReadEndSwitches()
-{
- Serial.print("VisorCloseEndSwitch="); Serial.println(digitalRead(visorCloseDetectionSwitch));
-Serial.print("VisroOpenEndSwitch="); Serial.println(digitalRead(visorOpenDetectionSwitch));
-Serial.println();
-}
-
-
-//This code has a dependancy on the stepper code. 
-
-void MoveVisor()
-{
-  if(UP == true)
+  if(B == true)
   {
-    while(UP == true) //wait for button to be released, helps stop looping
-    {
-      MoveStepper(100);
-      ReadButtons();
-    }    
-  }
-  else if(DOWN == true)
-  {
-    while(DOWN == true) //wait for button to be released, helps stop looping
-    {
-      MoveStepper(-100);
-      ReadButtons();
-    }
+    
+    while(B == true) {ReadButtons();}//wait for release, helps stop sending lots of repeats.
+    delay(5); //debounce
+    Serial.print(0);
   }
 }
-
-
-//maybe
-void MoveVisorWithEndSwitches()
-{
- 
-  //If the visor is somewhere in between open and closed, open it.
-  if(visorCloseDetectionSwitch == LOW and visorOpenDetectionSwitch == LOW)
-  {
-    OpenVisor();
-  }
-  
-  //If visor is detected as CLOSED, open it
-  else if (visorCloseDetectionSwitch == HIGH)
-  {
-    OpenVisor();
-  }
-  
-  //if visor is detected as OPEN, close it. 
-  else if (visorOpenDetectionSwitch == HIGH)
-  {
-    CloseVisor();
-  }
-  
-}
-
 
 
 
