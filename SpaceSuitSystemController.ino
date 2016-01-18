@@ -5,8 +5,9 @@ const int stepsPerRevolution = 200;                    // change this to fit the
 
 
 boolean UP, DOWN, LEFT, RIGHT, A, B;
+boolean DEV = false;
 
-boolean rotatorOn = false;
+int BRIGHTNESS = 128;
 
 const int rotatorPin = 4;
 
@@ -30,7 +31,7 @@ void setup()
 {
   
   Serial.begin(9600); //comms to LED arduino controller
-  Serial.println("Hello world!");
+  if(DEV) Serial.println("Hello world!");
   InitializeStepper();
   //MoveStepper(400);
 }
@@ -40,30 +41,27 @@ void setup()
 void loop()
 {
   ReadButtons();
+
+  //PrintAnalogPorts();
   //PrintButtons();
+  //PrintEndSwitches();
 
   //Set Rotator Toggle
-  CheckRotatorToggle();
+  CheckForRotatorToggle();
 
   //Set new program if direciton button is pressed.
+  CheckLedProgramChange();
 
   //move visor if visor toggle is pressed. 
+  CheckVisorOpenClose();
 
   //check for serial pogram.
   serialEvent();
+  delay(100);
 }
 
 
-void CheckRotatorToggle()
-{
-  if(B == true)
-  {
-    
-    while(B == true) {ReadButtons();}//wait for release, helps stop sending lots of repeats.
-    delay(5); //debounce
-    Serial.print(0);
-  }
-}
+
 
 
 

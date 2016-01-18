@@ -7,7 +7,7 @@ long maxSteps = 80000;
 void OpenVisor()
 {
   
-  Serial.println("Open Visor");
+  if(DEV) Serial.println("Open Visor");
   
   if( digitalRead(visorOpenDetectionSwitch) == HIGH)
   {
@@ -32,13 +32,13 @@ void OpenVisor()
   
     DisableStepper();
     
-    Serial.println("Open Visor Done ");
-    Serial.print("Steps Taken: "); Serial.println(counterStepping); 
+    if(DEV) Serial.println("Open Visor Done ");
+    if(DEV) Serial.print("Steps Taken: "); Serial.println(counterStepping); 
      
   }
   else
   {
-    Serial.println("Open Visor End Switch already engaged. Aborting opening."); 
+    if(DEV) Serial.println("Open Visor End Switch already engaged. Aborting opening."); 
    }
   
 }
@@ -47,7 +47,7 @@ void OpenVisor()
 void CloseVisor()
 {
 
-  Serial.println("Close Visor");
+  if(DEV) Serial.println("Close Visor");
 
   if(digitalRead(visorCloseDetectionSwitch) == HIGH)
   {
@@ -75,13 +75,13 @@ void CloseVisor()
      counterStepping += 2000;
   
     DisableStepper();
-    Serial.println("Close Visor Done");
-     Serial.print("Steps Taken: "); Serial.println(counterStepping); 
+    if(DEV) Serial.println("Close Visor Done");
+    if(DEV) Serial.print("Steps Taken: "); Serial.println(counterStepping); 
   
   }
   else
   {
-    Serial.println("CLose Visor End Switch already engaged. Aborting opening."); 
+    if(DEV) Serial.println("CLose Visor End Switch already engaged. Aborting opening."); 
   }
 }
 
@@ -96,8 +96,8 @@ void MoveStepperRamping(int steps)
   {
     EnableStepper();
     
-    Serial.print("Move Stepper ");
-    Serial.println(steps);
+    if(DEV) Serial.print("Move Stepper ");
+    if(DEV) Serial.println(steps);
     
     //set direciton
     if(steps < 0)
@@ -151,19 +151,19 @@ void MoveStepper(int steps)
   
   EnableStepper();
   
-  Serial.print("Move Stepper ");
-  Serial.println(steps);
+  if(DEV) Serial.print("Move Stepper ");
+  if(DEV) Serial.println(steps);
   
   //set direciton
   if(steps < 0)
   {
     digitalWrite(DIRECTION, LOW);
-    Serial.println("direciton Close");
+    if(DEV) Serial.println("direciton Close");
   }
   else
   {
     digitalWrite(DIRECTION, HIGH);
-    Serial.println("direciton Open");
+    if(DEV) Serial.println("direciton Open");
   }
 
   delay(1);//wait for direciton change in stepper controller
@@ -210,7 +210,7 @@ void DisableStepper()
 
 void InitializeStepper()
 {
-  Serial.println("InitializeStepper");
+  if(DEV) Serial.println("InitializeStepper");
    //stepperPins
  pinMode(DIRECTION, OUTPUT);
  pinMode(STEP, OUTPUT);

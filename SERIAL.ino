@@ -3,9 +3,9 @@ void serialEvent() {
   while (Serial.available()) {
     // get the new byte:
     int inByte = Serial.read();
-    Serial.print("DataRecieved: "); Serial.println(inByte);
+    if(DEV) Serial.print("DataRecieved: "); Serial.println(inByte);
     inByte -= 48;
-    Serial.print("DataModified: "); Serial.println(inByte);
+    if(DEV) Serial.print("DataModified: "); Serial.println(inByte);
      if(inByte == 0)
      {
        OpenVisor();
